@@ -242,25 +242,26 @@ int SrsFFMPEG::start()
 	int flag = 0;
 	for(std::map<int,string>::iterator it = infoCli.begin();it!=infoCli.end();it++){
 		if(it->second == _output){
-			flag++; 
+			flag=1;
+			break;
 		}
 	}
-	if (flag == recordNum){
-		recordNum = 0;
-	} else {
+	if (flag != recordNum){
+		if(flag == 0){
+       			inputTmp = input;
+        		input = "";
+        		if(!started)
+				if(recordNum!=-1)
+            			return ret;
+       			else{
+            			stop();
+            			started = false;
+			}
+        	} else {
+			if(recordNum!=-1)
+        			input = inputTmp;
+        		}
 		recordNum = flag;
-		if(recordNum == 0){
-        inputTmp = input;
-        input = "";
-        if(!started)
-            return ret;
-        else
-            stop();
-            started = false;
-        } else {
-        input = inputTmp;
-        
-        }
 	}
     
     if (started) {
