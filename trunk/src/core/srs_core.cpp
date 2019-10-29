@@ -22,5 +22,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include <srs_core.hpp>
-
+std::map<int, string> infoCli;
+std::int placeHolder = 0;
 
