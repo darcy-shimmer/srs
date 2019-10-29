@@ -49,6 +49,8 @@ using namespace std;
 #define SRS_RTMP_ENCODER_ACODEC         "aac"
 #define SRS_RTMP_ENCODER_LIBAACPLUS     "libaacplus"
 #define SRS_RTMP_ENCODER_LIBFDKAAC      "libfdk_aac"
+//added by darcy
+int recordNum = 0;
 
 SrsFFMPEG::SrsFFMPEG(std::string ffmpeg_bin)
 {
@@ -236,6 +238,30 @@ int SrsFFMPEG::initialize_copy()
 int SrsFFMPEG::start()
 {
     int ret = ERROR_SUCCESS;
+    //added by darcy
+	int flag = 0;
+	for(std::map<int,string>::iterator it = infoCli.begin();it!=infoCli.end();it++){
+		if(it->second == _output){
+			flag++; 
+		}
+	}
+	if (flag == recordNum){
+		recordNum = 0;
+	} else {
+		recordNum = flag;
+		if(recordNum == 0){
+        inputTmp = input;
+        input = "";
+        if(!started)
+            return ret;
+        else
+            stop();
+            started = false;
+        } else {
+        input = inputTmp;
+        
+        }
+	}
     
     if (started) {
         return ret;
