@@ -464,6 +464,14 @@ int SrsRtmpConn::stream_service_cycle()
         req->tcUrl.c_str(), req->pageUrl.c_str(), req->swfUrl.c_str(),
         req->schema.c_str(), req->vhost.c_str(), req->port.c_str(),
         req->app.c_str(), req->stream.c_str(), req->param.c_str(), (req->args? "(obj)":"null"));
+    //added by darcy
+	if (/*判断是否为转码stream,if 1*/){
+		infoCli[placeHolder] = req->stream.c_str();
+		srs_trace("add pid = %d ,stream = %s succeeded", placeHolder, req->stream.c_str())
+	} else {
+		infoCli.erase(placeHolder);
+		srs_trace("add pid = %d ,stream = %s failed, and delete pid %d", placeHolder, req->stream.c_str(), placeHolder)
+	}
     
     // do token traverse before serve it.
     // @see https://github.com/ossrs/srs/pull/239
