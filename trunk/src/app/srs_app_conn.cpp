@@ -85,6 +85,16 @@ int SrsConnection::cycle()
     id = _srs_context->get_id();
     
     ip = srs_get_peer_ip(st_netfd_fileno(stfd));
+    cout<<"id: "<< id << "\t" << "srs_id: "<< srs_id() << endl;
+    cout<<"id: "<< id << "\t" << "ip: "<< ip << endl;
+	//added by darcy
+	int flag = infoCli.insert(pair<int, string>(id, "waiting for writing"));
+	if (flag == 1){
+		placeHolder = id;
+		srs_trace("add pid = %d succeeded", placeHolder);
+	}else {
+		srs_warn("add pid = %d failed",id);
+	}
     
     ret = do_cycle();
     
