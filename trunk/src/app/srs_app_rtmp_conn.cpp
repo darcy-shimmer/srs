@@ -464,15 +464,20 @@ int SrsRtmpConn::stream_service_cycle()
         req->tcUrl.c_str(), req->pageUrl.c_str(), req->swfUrl.c_str(),
         req->schema.c_str(), req->vhost.c_str(), req->port.c_str(),
         req->app.c_str(), req->stream.c_str(), req->param.c_str(), (req->args? "(obj)":"null"));
-    //added by darcy
-	if (/*判断是否为转码stream,if 1*/){
-		infoCli[placeHolder] = req->stream.c_str();
-		srs_trace("add pid = %d ,stream = %s succeeded", placeHolder, req->stream.c_str())
-	} else {
-		infoCli.erase(placeHolder);
-		srs_trace("add pid = %d ,stream = %s failed, and delete pid %d", placeHolder, req->stream.c_str(), placeHolder)
-	}
-    
+    //added by darcy	
+	if (req->stream.c_str() != NULL){
+		string _play = "Play";
+		if (srs_client_type_string(type).c_str() == _play){
+			pair<map<int, string>::iterator, bool> flagOri = infoCli.insert(pair<int, string>(srs_id(), req->stream.c_str()));
+			bool flag = flagOri.second;
+			if (flag == true){
+				srs_trace("add pid = %d succeeded, stream = %s", srs_id() ,req->stream.c_str());
+			}else {
+				srs_warn("add pid = %d failed", srs_id());
+			}
+		}
+	}	
+	
     // do token traverse before serve it.
     // @see https://github.com/ossrs/srs/pull/239
     if (true) {
@@ -525,7 +530,8 @@ int SrsRtmpConn::stream_service_cycle()
         req->get_stream_url().c_str(), ip.c_str(), enabled_cache, vhost_is_edge, 
         source->source_id(), source->source_id());
     source->set_cache(enabled_cache);
-    
+    srs_warn("rtmp conn srs id=%d",srs_id());
+	
     client_type = type;
     switch (type) {
         case SrsRtmpConnPlay: {
