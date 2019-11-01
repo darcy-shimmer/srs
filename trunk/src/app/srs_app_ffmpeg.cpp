@@ -31,6 +31,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/types.h>
 
 using namespace std;
+#include <typeinfo>
+#include <iostream>
 
 #include <srs_kernel_error.hpp>
 #include <srs_kernel_log.hpp>
@@ -49,8 +51,7 @@ using namespace std;
 #define SRS_RTMP_ENCODER_ACODEC         "aac"
 #define SRS_RTMP_ENCODER_LIBAACPLUS     "libaacplus"
 #define SRS_RTMP_ENCODER_LIBFDKAAC      "libfdk_aac"
-//added by darcy
-int recordNum = 0;
+
 
 SrsFFMPEG::SrsFFMPEG(std::string ffmpeg_bin)
 {
@@ -67,6 +68,9 @@ SrsFFMPEG::SrsFFMPEG(std::string ffmpeg_bin)
     abitrate         = 0;
     asample_rate     = 0;
     achannels         = 0;
+	//added by darcy
+	recordNum         = -1;
+
 }
 
 SrsFFMPEG::~SrsFFMPEG()
@@ -238,32 +242,52 @@ int SrsFFMPEG::initialize_copy()
 int SrsFFMPEG::start()
 {
     int ret = ERROR_SUCCESS;
-    //added by darcy
+	//added by darcy
+	
 	int flag = 0;
 	for(std::map<int,string>::iterator it = infoCli.begin();it!=infoCli.end();it++){
-		if(it->second == _output){
-			flag=1;
+//		srs_warn("value = %s", it->second);
+//		srs_warn("output = %s", _output);
+		int point = _output.find_last_of("/");
+		string output_ = _output.substr(point+1);
+		cout << "output_" <<output_<<endl;
+		cout << "output" <<_output<< "\t" <<"value"<< it->second<< endl;
+//		cout<<typeid(output_).name()<<"\t"<< typeid(it->second).name() << endl;
+		if(it->second == output_){
+			flag = 1;
 			break;
 		}
 	}
+	srs_warn("aaaaaaaa %d", recordNum);
 	if (flag != recordNum){
 		if(flag == 0){
-       			inputTmp = input;
+       			srs_warn("in!!!!");
+				//srs_warn("input = %s", input);
+				inputTmp = input;
         		input = "";
-        		if(!started)
-				if(recordNum!=-1)
+        		if(!started){
+					if(recordNum!=-1){
+						srs_warn("in1!!!!");
             			return ret;
-       			else{
-            			stop();
-            			started = false;
+					}
+				}else{
+					srs_warn("in2!!!!");
+            		stop();
+            		started = false;
+				}			
+        } else {
+			if(recordNum!=-1){
+				srs_warn("in3!!!!");
+        		input = inputTmp;
+				started = false;	
 			}
-        	} else {
-			if(recordNum!=-1)
-        			input = inputTmp;
-        		}
+        }
+		srs_warn("in4!!!!");
 		recordNum = flag;
+	} else {
+		srs_warn("not in4 !!!!");
 	}
-    
+ 
     if (started) {
         return ret;
     }
@@ -464,22 +488,6 @@ int SrsFFMPEG::start()
         }
         
         // log basic info
-        if (true) {
-            char buf[4096];
-            int pos = 0;
-            pos += snprintf(buf + pos, sizeof(buf) - pos, "\n");
-            pos += snprintf(buf + pos, sizeof(buf) - pos, "ffmpeg cid=%d\n", cid);
-            pos += snprintf(buf + pos, sizeof(buf) - pos, "log=%s\n", log_file.c_str());
-            pos += snprintf(buf + pos, sizeof(buf) - pos, "params: %s\n", cli.c_str());
-            ::write(log_fd, buf, pos);
-        }
-        
-        // dup to stdout and stderr.
-        if (dup2(log_fd, STDOUT_FILENO) < 0) {
-            ret = ERROR_ENCODER_DUP2;
-            srs_error("dup2 encoder file failed. ret=%d", ret);
-            exit(ret);
-        }
         if (dup2(log_fd, STDERR_FILENO) < 0) {
             ret = ERROR_ENCODER_DUP2;
             srs_error("dup2 encoder file failed. ret=%d", ret);
@@ -524,8 +532,8 @@ int SrsFFMPEG::start()
 
 int SrsFFMPEG::cycle()
 {
-    int ret = ERROR_SUCCESS;
-    
+    int ret = ERROR_SUCCESS;  
+ 
     if (!started) {
         return ret;
     }
