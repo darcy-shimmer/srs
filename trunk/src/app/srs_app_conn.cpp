@@ -20,9 +20,9 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-
+#include <iostream>
 #include <srs_app_conn.hpp>
-
+using namespace std;
 #include <srs_kernel_log.hpp>
 #include <srs_kernel_error.hpp>
 #include <srs_app_utility.hpp>
@@ -85,17 +85,7 @@ int SrsConnection::cycle()
     id = _srs_context->get_id();
     
     ip = srs_get_peer_ip(st_netfd_fileno(stfd));
-    cout<<"id: "<< id << "\t" << "srs_id: "<< srs_id() << endl;
-    cout<<"id: "<< id << "\t" << "ip: "<< ip << endl;
-	//added by darcy
-	int flag = infoCli.insert(pair<int, string>(id, "waiting for writing"));
-	if (flag == 1){
-		placeHolder = id;
-		srs_trace("add pid = %d succeeded", placeHolder);
-	}else {
-		srs_warn("add pid = %d failed",id);
-	}
-    
+	
     ret = do_cycle();
     
     // if socket io error, set to closed.
@@ -110,7 +100,23 @@ int SrsConnection::cycle()
     
     // client close peer.
     if (ret == ERROR_SOCKET_CLOSED) {
+		//added by darcy
+		cout<<"id: "<< id << "\t" << "srs_id: "<< srs_id() << endl;
+		cout<<"id: "<< id << "\t" << "ip: "<< ip << endl;
         srs_warn("client disconnect peer. ret=%d", ret);
+		for(std::map<int,string>::iterator it = infoCli.begin();it!=infoCli.end();it++){
+			cout<<it->first<<"\t"<< it->second << endl; 
+		}
+		int flag = infoCli.erase(srs_id());
+		for(std::map<int,string>::iterator it = infoCli.begin();it!=infoCli.end();it++){
+			cout<<it->first<<"\t"<< it->second << endl; 
+		}
+		if (flag == 1){
+			srs_trace("delete pid = %d succeeded",srs_id());
+		}else {
+			srs_warn("delete pid = %d failed",srs_id());
+		}
+
     }
 
     return ERROR_SUCCESS;
