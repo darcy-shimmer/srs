@@ -42,11 +42,15 @@ using namespace std;
 #include <srs_app_log.hpp>
 #include <srs_kernel_utility.hpp>
 #include <srs_core_performance.hpp>
-
+	//added by darcy
+#include <iostream>
+#include <string.h>
+#include <map>
 // pre-declare
 int run();
 int run_master();
-
+	//added by darcy
+//map<int, string> infoCli;
 // for the main objects(server, config, log, context),
 // never subscribe handler in constructor,
 // instead, subscribe handler in initialize method.
