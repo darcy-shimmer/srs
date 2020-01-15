@@ -56,6 +56,8 @@ private:
     std::string                 _iparams;
     std::string                 iformat;
     std::string                 input;
+	//added by darcy
+    std::string                 inputTmp;
     std::vector<std::string>    vfilter;
     std::string                 vcodec;
     int                         vbitrate;
@@ -73,6 +75,9 @@ private:
     std::vector<std::string>    aparams;
     std::string                 oformat;
     std::string                 _output;
+	//added by darcy
+	int recordNum;
+	
 public:
     SrsFFMPEG(std::string ffmpeg_bin);
     virtual ~SrsFFMPEG();
