@@ -2264,7 +2264,8 @@ int SrsSource::create_consumer(SrsConnection* conn, SrsConsumer*& consumer, bool
     
     consumer = new SrsConsumer(this, conn);
     consumers.push_back(consumer);
-    
+	//added by darcy
+    srs_warn("one consumer connected");
     double queue_size = _srs_config->get_queue_length(_req->vhost);
     consumer->set_queue_size(queue_size);
     
