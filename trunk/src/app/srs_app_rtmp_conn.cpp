@@ -471,7 +471,7 @@ int SrsRtmpConn::stream_service_cycle()
 			pair<map<int, string>::iterator, bool> flagOri = infoCli.insert(pair<int, string>(srs_id(), req->stream.c_str()));
 			bool flag = flagOri.second;
 			if (flag == true){
-				srs_trace("add pid = %d succeeded, stream = %s", srs_id() ,req->stream.c_str());
+				srs_warn("add pid = %d succeeded, stream = %s", srs_id() ,req->stream.c_str());
 			}else {
 				srs_warn("add pid = %d failed", srs_id());
 			}
