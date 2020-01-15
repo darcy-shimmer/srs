@@ -112,7 +112,7 @@ int SrsConnection::cycle()
 			cout<<it->first<<"\t"<< it->second << endl; 
 		}
 		if (flag == 1){
-			srs_trace("delete pid = %d succeeded",srs_id());
+			srs_warn("delete pid = %d succeeded",srs_id());
 		}else {
 			srs_warn("delete pid = %d failed",srs_id());
 		}
@@ -137,5 +137,3 @@ void SrsConnection::expire()
 {
     expired = true;
 }
-
-
